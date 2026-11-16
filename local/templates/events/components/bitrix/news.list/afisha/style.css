@@ -1,0 +1,117 @@
+.events-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.events-list__empty {
+    grid-column: 1 / -1;
+    padding: 32px;
+    border: 1px dashed var(--events-border-strong);
+    border-radius: var(--events-radius-l);
+    color: var(--events-muted);
+    text-align: center;
+}
+
+.events-list__item {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 22px;
+    background: var(--events-surface);
+    border: 1px solid var(--events-border);
+    border-radius: var(--events-radius-l);
+    box-shadow: var(--events-shadow);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.events-list__item:hover {
+    border-color: var(--events-border-strong);
+    box-shadow: 0 4px 16px rgba(16, 24, 40, 0.06);
+}
+
+/* В разметке урока 5 дата и формат идут после заголовка — поднимаем их наверх карточки */
+
+.events-list__date {
+    order: -2;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    color: var(--events-text);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.events-list__date::before {
+    content: '';
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    background: no-repeat center / 16px
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235B6270' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='5' width='18' height='16' rx='3'/%3E%3Cpath d='M3 10h18M8 3v4M16 3v4'/%3E%3C/svg%3E");
+}
+
+.events-list__format {
+    order: -1;
+    align-self: flex-start;
+    margin: 0;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--events-chip);
+    color: var(--events-chip-text);
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.events-list__title {
+    margin: 0;
+    font-size: 20px;
+    line-height: 1.3;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
+.events-list__title a {
+    color: var(--events-text);
+}
+
+.events-list__title a:hover {
+    color: var(--events-accent);
+    text-decoration: none;
+}
+
+.events-list__preview {
+    color: var(--events-muted);
+    font-size: 15px;
+    line-height: 1.55;
+}
+
+.events-list__preview p {
+    margin: 0;
+    color: inherit;
+}
+
+.events-list__seats {
+    margin: auto 0 0;
+    padding-top: 14px;
+    border-top: 1px solid var(--events-divider);
+    color: var(--events-accent);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.events-list__seats--low {
+    color: var(--events-warning-text);
+}
+
+.events-list__seats--none {
+    color: var(--events-muted);
+}
+
+/* Постраничная навигация из NAV_STRING занимает всю ширину сетки */
+
+.events-list > :last-child:not(.events-list__item):not(.events-list__empty) {
+    grid-column: 1 / -1;
+    margin-top: 16px;
+}

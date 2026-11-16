@@ -1,0 +1,47 @@
+/* Карточка ведущего (урок 6): фото слева, подпись, имя и должность справа */
+
+.academy-event-host {
+    display: grid;
+    grid-template-columns: 56px minmax(0, 1fr);
+    column-gap: 14px;
+    align-items: center;
+    max-width: 360px;
+    padding: 20px;
+    background: var(--events-surface, #FFFFFF);
+    border: 1px solid var(--events-border, #E6E8EC);
+    border-radius: var(--events-radius-xl, 20px);
+}
+
+.academy-event-host:not(:has(.academy-event-host__photo)) {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.academy-event-host__photo {
+    grid-row: 1 / span 3;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.academy-event-host__label,
+.academy-event-host__name,
+.academy-event-host__position {
+    grid-column: -2;
+}
+
+.academy-event-host__label {
+    color: var(--events-muted, #5B6270);
+    font-size: 13px;
+}
+
+.academy-event-host__name {
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.academy-event-host__position {
+    color: var(--events-muted, #5B6270);
+    font-size: 14px;
+}

@@ -1,0 +1,58 @@
+/* Мои заявки (урок 9, дополняется в уроках 11, 12 и 15) */
+
+.academy-registration {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 0 0 16px;
+    padding: 20px 22px;
+    background: var(--events-surface, #FFFFFF);
+    border: 1px solid var(--events-border, #E6E8EC);
+    border-radius: var(--events-radius-l, 16px);
+}
+
+.academy-registration > p {
+    margin: 0;
+    color: var(--events-text-body, #2A2F38);
+}
+
+.academy-registration > p:first-child {
+    color: var(--events-text, #16181D);
+    font-size: 17px;
+    font-weight: 600;
+}
+
+.academy-registration > ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.academy-registration > ul li {
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--events-chip, #EEF1F4);
+    color: var(--events-chip-text, #3B4250);
+    font-size: 14px;
+}
+
+.academy-registration button {
+    align-self: flex-start;
+    min-height: 44px;
+    padding: 0 16px;
+    border: 1px solid var(--events-border-strong, #D5D9E0);
+    border-radius: var(--events-radius-s, 10px);
+    background: var(--events-surface, #FFFFFF);
+    color: var(--events-text, #16181D);
+    font: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.academy-registration button:hover {
+    background: var(--events-bg, #F5F6F8);
+}

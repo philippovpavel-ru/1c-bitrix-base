@@ -1,0 +1,154 @@
+/* Карточка мероприятия (урок 5) и блок записи (урок 14) */
+
+.event-card {
+    padding: 36px;
+    background: var(--events-surface);
+    border: 1px solid var(--events-border);
+    border-radius: var(--events-radius-xl);
+}
+
+.event-card__facts {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    gap: 0 24px;
+    margin: 0 0 28px;
+    padding: 6px 20px;
+    background: var(--events-bg);
+    border-radius: var(--events-radius-m);
+}
+
+.event-card__facts dt,
+.event-card__facts dd {
+    margin: 0;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--events-border);
+}
+
+.event-card__facts dt {
+    color: var(--events-muted);
+    font-size: 14px;
+}
+
+.event-card__facts dd {
+    font-weight: 600;
+}
+
+.event-card__facts dt:nth-last-of-type(1),
+.event-card__facts dd:nth-last-of-type(1) {
+    border-bottom: 0;
+}
+
+.event-card__text {
+    max-width: 680px;
+    color: var(--events-text-body);
+    font-size: 16px;
+    line-height: 1.65;
+}
+
+.event-card__text p {
+    margin: 0 0 14px;
+}
+
+/* Блок записи */
+
+.event-registration {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-width: 480px;
+    margin-top: 24px;
+    padding: 24px;
+    background: var(--events-surface);
+    border: 1px solid var(--events-border);
+    border-radius: var(--events-radius-xl);
+}
+
+.event-registration__title {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.event-registration__label {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.event-registration__names {
+    width: 100%;
+    min-height: 96px;
+    padding: 12px 14px;
+    border: 1px solid var(--events-border-strong);
+    border-radius: var(--events-radius-m);
+    background: var(--events-surface);
+    color: var(--events-text);
+    font: inherit;
+    font-size: 15px;
+    resize: vertical;
+}
+
+.event-registration__names:focus-visible {
+    outline: 2px solid var(--events-accent);
+    outline-offset: 1px;
+    border-color: var(--events-accent);
+}
+
+.event-registration__submit {
+    min-height: 48px;
+    border: 0;
+    border-radius: var(--events-radius-m);
+    background: var(--events-accent);
+    color: #FFFFFF;
+    font: inherit;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.event-registration__submit:hover {
+    background: var(--events-accent-hover);
+}
+
+.event-registration__submit:focus-visible {
+    outline: 2px solid var(--events-accent);
+    outline-offset: 2px;
+}
+
+.event-registration__message {
+    margin: 0;
+    padding: 12px 14px;
+    border-radius: var(--events-radius-m);
+    background: var(--events-accent-soft);
+    color: var(--events-accent-hover);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.event-registration__message:empty {
+    display: none;
+}
+
+.event-registration__message--error {
+    background: var(--events-danger-bg);
+    color: var(--events-danger-text);
+}
+
+@media (max-width: 640px) {
+    .event-card {
+        padding: 22px;
+    }
+
+    .event-card__facts {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .event-card__facts dt {
+        padding-bottom: 0;
+        border-bottom: 0;
+    }
+
+    .event-card__facts dd {
+        padding-top: 2px;
+    }
+}

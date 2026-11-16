@@ -1,0 +1,231 @@
+/* Стили контента: текст, ссылки, таблицы, формы, кнопки, статусы, сообщения */
+
+:where(.events-main) a {
+    color: var(--events-accent);
+    text-decoration: none;
+}
+
+:where(.events-main) a:hover {
+    color: var(--events-accent-hover);
+    text-decoration: underline;
+}
+
+:where(.events-main) p {
+    margin: 0 0 14px;
+    line-height: 1.65;
+    color: var(--events-text-body);
+}
+
+:where(.events-main) h2 {
+    margin: 32px 0 12px;
+    font-size: 24px;
+    line-height: 1.25;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
+:where(.events-main) h3 {
+    margin: 24px 0 8px;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+:where(.events-main) ul,
+:where(.events-main) ol {
+    margin: 0 0 14px;
+    padding-left: 22px;
+    line-height: 1.65;
+}
+
+.events-lead,
+:where(.events-main) .events-lead {
+    max-width: 640px;
+    margin: 0 0 36px;
+    color: var(--events-muted);
+    font-size: 18px;
+    line-height: 1.55;
+}
+
+/* Таблицы */
+
+:where(.events-main) table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 0 0 24px;
+    background: var(--events-surface);
+    border: 1px solid var(--events-border);
+    border-radius: var(--events-radius-l);
+    overflow: hidden;
+    font-size: 15px;
+}
+
+:where(.events-main) th,
+:where(.events-main) td {
+    padding: 12px 16px;
+    text-align: left;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--events-divider);
+}
+
+:where(.events-main) th {
+    background: var(--events-bg);
+    color: var(--events-muted);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+:where(.events-main) tr:last-child td {
+    border-bottom: 0;
+}
+
+.events-table-wrap {
+    overflow-x: auto;
+}
+
+/* Поля форм */
+
+:where(.events-main) label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+:where(.events-main) input[type="text"],
+:where(.events-main) input[type="email"],
+:where(.events-main) input[type="number"],
+:where(.events-main) input[type="password"],
+:where(.events-main) select,
+:where(.events-main) textarea {
+    width: 100%;
+    min-height: 46px;
+    padding: 10px 14px;
+    border: 1px solid var(--events-border-strong);
+    border-radius: var(--events-radius-m);
+    background: var(--events-surface);
+    color: var(--events-text);
+    font: inherit;
+    font-size: 15px;
+}
+
+:where(.events-main) textarea {
+    resize: vertical;
+}
+
+:where(.events-main) input:focus-visible,
+:where(.events-main) select:focus-visible,
+:where(.events-main) textarea:focus-visible {
+    outline: 2px solid var(--events-accent);
+    outline-offset: 1px;
+    border-color: var(--events-accent);
+}
+
+.events-field-error {
+    margin-top: 6px;
+    color: var(--events-danger-line);
+    font-size: 13px;
+}
+
+/* Кнопки */
+
+.events-button,
+:where(.events-main) button[type="submit"] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 48px;
+    padding: 0 22px;
+    border: 0;
+    border-radius: var(--events-radius-m);
+    background: var(--events-accent);
+    color: #FFFFFF;
+    font: inherit;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.events-button:hover,
+:where(.events-main) button[type="submit"]:hover {
+    background: var(--events-accent-hover);
+    color: #FFFFFF;
+    text-decoration: none;
+}
+
+.events-button--secondary {
+    border: 1px solid var(--events-border-strong);
+    background: var(--events-surface);
+    color: var(--events-text);
+    font-weight: 500;
+}
+
+.events-button--secondary:hover {
+    background: var(--events-bg);
+    color: var(--events-text);
+}
+
+.events-button:disabled,
+:where(.events-main) button[type="submit"]:disabled {
+    background: var(--events-border);
+    color: var(--events-muted);
+    cursor: default;
+}
+
+.events-button:focus-visible,
+:where(.events-main) button:focus-visible,
+:where(.events-main) a:focus-visible {
+    outline: 2px solid var(--events-accent);
+    outline-offset: 2px;
+}
+
+/* Статусы заявок */
+
+.events-status {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: var(--events-chip);
+    color: var(--events-chip-text);
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.events-status--new {
+    background: var(--events-info-bg);
+    color: var(--events-info-text);
+}
+
+.events-status--confirmed {
+    background: var(--events-success-bg);
+    color: var(--events-success-text);
+}
+
+.events-status--cancelled {
+    background: var(--events-chip);
+    color: var(--events-chip-text);
+}
+
+/* Сообщения */
+
+.events-message {
+    margin: 0 0 16px;
+    padding: 12px 14px;
+    border-radius: var(--events-radius-m);
+    background: var(--events-accent-soft);
+    color: var(--events-accent-hover);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.events-message--error {
+    background: var(--events-danger-bg);
+    color: var(--events-danger-text);
+}
+
+.events-message:empty {
+    display: none;
+}
