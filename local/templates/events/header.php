@@ -22,6 +22,7 @@ Asset::getInstance()->addString('<meta name="viewport" content="width=device-wid
 </head>
 <body>
 <?php $APPLICATION->ShowPanel(); ?>
+
 <header class="events-header">
     <a class="events-header__logo" href="<?= SITE_DIR ?>events/">Мероприятия</a>
     <p class="events-header__slogan"><?php $APPLICATION->ShowProperty('slogan'); ?></p>
@@ -42,6 +43,16 @@ Asset::getInstance()->addString('<meta name="viewport" content="width=device-wid
 </header>
 <main class="events-main">
     <?php $APPLICATION->IncludeComponent(
+        'bitrix:breadcrumb',
+        '',
+        [
+            'START_FROM' => '0',
+            'PATH' => '',
+            'SITE_ID' => '-',
+        ]
+    ); ?>
+
+    <?php $APPLICATION->IncludeComponent(
         'bitrix:menu',
         'events_left',
         [
@@ -54,4 +65,25 @@ Asset::getInstance()->addString('<meta name="viewport" content="width=device-wid
             'MENU_CACHE_GET_VARS' => [],
         ]
     ); ?>
+
+    <div class="events-header__contacts">
+        <?php $APPLICATION->IncludeComponent(
+            'bitrix:main.include',
+            '',
+            [
+                'AREA_FILE_SHOW' => 'file',
+                'PATH' => SITE_DIR . 'include/contacts.php',
+            ]
+        ); ?>
+    </div>
+
     <h1><?php $APPLICATION->ShowTitle(false); ?></h1>
+
+    <?php $APPLICATION->IncludeComponent(
+        'bitrix:main.include',
+        '',
+        [
+            'AREA_FILE_SHOW' => 'sect',
+            'AREA_FILE_SUFFIX' => 'notice',
+        ]
+    ); ?>

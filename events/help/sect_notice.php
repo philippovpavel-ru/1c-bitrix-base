@@ -1,0 +1,1 @@
+<p class="events-notice">Вопросы по заявкам присылайте на <a href="mailto:events@example.com">events@example.com</a></p>
