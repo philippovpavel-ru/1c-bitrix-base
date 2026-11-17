@@ -23,6 +23,16 @@ $templateData = [
             <dt>Дата и время</dt>
             <dd><?= HtmlFilter::encode($arResult['EVENT_DATE_TEXT']) ?></dd>
         <?php endif; ?>
+
+        <?php if ($arResult['EVENT_HOST_NAME'] !== ''): ?>
+            <dt>Ведущий</dt>
+            <dd>
+                <a href="<?= HtmlFilter::encode($arResult['EVENT_HOST_URL']) ?>">
+                    <?= HtmlFilter::encode($arResult['EVENT_HOST_NAME']) ?>
+                </a>
+            </dd>
+        <?php endif; ?>
+
         <?php foreach (['FORMAT', 'SEATS_LIMIT'] as $code): ?>
             <?php if (isset($props[$code])): ?>
                 <dt><?= $props[$code]['NAME'] ?></dt>
