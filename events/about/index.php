@@ -1,16 +1,22 @@
 <?php
+use Academy\Events\Settings;
+use Bitrix\Main\Loader;
+use Bitrix\Main\Text\HtmlFilter;
+
 require $_SERVER['DOCUMENT_ROOT'] . '/bitrix/header.php';
 $APPLICATION->SetTitle('О мероприятиях');
-$APPLICATION->SetPageProperty('slogan', 'Информация и расписание');
+$APPLICATION->SetPageProperty('slogan', 'Узнайте, как устроены наши события');
+
+$organizerEmail = Loader::includeModule('academy.events') ? Settings::getOrganizerEmail() : '';
+$showEmail = Loader::includeModule('academy.events') ? Settings::isOrganizerEmailVisible() : false;
 ?>
-
-<h2>О мероприятиях</h2>
-<p class="events-lead"> 
-    На этой странице вы можете узнать больше о наших мероприятиях, их расписании и возможностях участия. 
-    Мы стремимся предоставить актуальную информацию и удобные инструменты для записи участников. 
-    Пожалуйста, ознакомьтесь с афишей ближайших событий и не упустите возможность присоединиться к нам!
-</p>
-
+<p class="events-lead">Как проходят мероприятия и как на них записаться.</p>
+<?php if ($showEmail && $organizerEmail !== ''): ?>
+    <p>
+        Вопросы о мероприятиях:
+        <a href="mailto:<?= HtmlFilter::encode($organizerEmail) ?>"><?= HtmlFilter::encode($organizerEmail) ?></a>
+    </p>
+<?php endif; ?>
 <?php
 require $_SERVER['DOCUMENT_ROOT'] . '/bitrix/footer.php';
 ?>

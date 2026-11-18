@@ -1,0 +1,11 @@
+/* Компактная карточка ведущего (урок 6): имя одной строкой, например в списке ведущих */
+
+.academy-event-host-compact {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--events-chip, #EEF1F4);
+    color: var(--events-chip-text, #3B4250);
+    font-size: 14px;
+    font-weight: 500;
+}
