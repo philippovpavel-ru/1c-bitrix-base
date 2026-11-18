@@ -1,5 +1,8 @@
 <?php
 
+use Academy\Events\RegistrationTable;
+use Bitrix\Main\Application;
+use Bitrix\Main\Loader;
 use Bitrix\Main\Config\Option;
 use Bitrix\Main\IO\Directory;
 use Bitrix\Main\Localization\Loc;
@@ -44,11 +47,28 @@ class academy_events extends CModule
 
     public function InstallDB()
     {
+        Loader::includeModule($this->MODULE_ID);
+
+        $entity = RegistrationTable::getEntity();
+        if (!Application::getConnection()->isTableExists($entity->getDBTableName()))
+        {
+            $entity->createDbTable();
+        }
+
         return true;
     }
 
     public function UnInstallDB()
     {
+        Loader::includeModule($this->MODULE_ID);
+
+        $tableName = RegistrationTable::getEntity()->getDBTableName();
+        $connection = Application::getConnection();
+        if ($connection->isTableExists($tableName))
+        {
+            $connection->dropTable($tableName);
+        }
+
         Option::delete($this->MODULE_ID);
 
         return true;
