@@ -1,8 +1,13 @@
 <?php
 require $_SERVER['DOCUMENT_ROOT'] . '/bitrix/header.php';
 $APPLICATION->SetTitle('Мои заявки');
+
+$APPLICATION->IncludeComponent(
+    'academy:registration.list',
+    '',
+    []
+);
 ?>
-<p>Здесь появится список ваших заявок.</p>
 <?php
 require $_SERVER['DOCUMENT_ROOT'] . '/bitrix/footer.php';
 ?>

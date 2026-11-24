@@ -14,6 +14,11 @@ use Bitrix\Main\Validation\Validator\EmailValidator;
 use Bitrix\Main\ORM\Event;
 use Bitrix\Main\ORM\EventResult;
 use Bitrix\Main\ORM\Fields\FieldError;
+use Bitrix\Main\ORM\Fields\Relations\Reference;
+use Bitrix\Main\ORM\Query\Join;
+use Bitrix\Main\UserTable;
+use Bitrix\Main\ORM\Fields\Relations\OneToMany;
+use Bitrix\Main\ORM\Fields\Relations\ManyToMany;
 
 Loc::loadMessages(__FILE__);
 
@@ -91,6 +96,17 @@ class RegistrationTable extends DataManager
             (new DatetimeField('CREATED_AT'))
                 ->configureDefaultValueNow()
                 ->configureTitle(Loc::getMessage('ACADEMY_EVENTS_REGISTRATION_CREATED_AT')),
+            
+            (new IntegerField('USER_ID'))
+                ->configureRequired()
+                ->configureTitle(Loc::getMessage('ACADEMY_EVENTS_REGISTRATION_USER_ID')),
+
+            (new Reference('USER', UserTable::class, Join::on('this.USER_ID', 'ref.ID'))),
+
+            (new OneToMany('PARTICIPANTS', ParticipantTable::class, 'REGISTRATION')),
+
+            (new ManyToMany('MASTERCLASSES', MasterclassTable::class))
+                ->configureTableName('academy_events_registration_masterclass'),
         ];
     }
 

@@ -1,6 +1,9 @@
 <?php
 
 use Academy\Events\RegistrationTable;
+use Academy\Events\ParticipantTable;
+use Academy\Events\MasterclassTable;
+use Academy\Events\RegistrationMasterclassTable;
 use Bitrix\Main\Application;
 use Bitrix\Main\Loader;
 use Bitrix\Main\Config\Option;
@@ -49,10 +52,14 @@ class academy_events extends CModule
     {
         Loader::includeModule($this->MODULE_ID);
 
-        $entity = RegistrationTable::getEntity();
-        if (!Application::getConnection()->isTableExists($entity->getDBTableName()))
+        $connection = Application::getConnection();
+        foreach ($this->getEntityClasses() as $class)
         {
-            $entity->createDbTable();
+            $entity = $class::getEntity();
+            if (!$connection->isTableExists($entity->getDBTableName()))
+            {
+                $entity->createDbTable();
+            }
         }
 
         return true;
@@ -62,16 +69,29 @@ class academy_events extends CModule
     {
         Loader::includeModule($this->MODULE_ID);
 
-        $tableName = RegistrationTable::getEntity()->getDBTableName();
         $connection = Application::getConnection();
-        if ($connection->isTableExists($tableName))
+        foreach ($this->getEntityClasses() as $class)
         {
-            $connection->dropTable($tableName);
+            $tableName = $class::getEntity()->getDBTableName();
+            if ($connection->isTableExists($tableName))
+            {
+                $connection->dropTable($tableName);
+            }
         }
 
         Option::delete($this->MODULE_ID);
 
         return true;
+    }
+
+    private function getEntityClasses(): array
+    {
+        return [
+            RegistrationTable::class,
+            ParticipantTable::class,
+            MasterclassTable::class,
+            RegistrationMasterclassTable::class,
+        ];
     }
 
     public function InstallFiles()
@@ -89,6 +109,7 @@ class academy_events extends CModule
     public function UnInstallFiles()
     {
         Directory::deleteDirectory($_SERVER['DOCUMENT_ROOT'] . '/local/components/academy/event.host');
+        Directory::deleteDirectory($_SERVER['DOCUMENT_ROOT'] . '/local/components/academy/registration.list');
 
         return true;
     }

@@ -56,3 +56,10 @@
 .academy-registration button:hover {
     background: var(--events-bg, #F5F6F8);
 }
+
+.academy-registration-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 0 0 16px;
+}

@@ -8,3 +8,4 @@ $MESS['ACADEMY_EVENTS_REGISTRATION_STATUS'] = 'Статус';
 $MESS['ACADEMY_EVENTS_REGISTRATION_CREATED_AT'] = 'Дата заявки';
 $MESS['ACADEMY_EVENTS_REGISTRATION_EMAIL_INVALID'] = 'Укажите email в формате name@example.com';
 $MESS['ACADEMY_EVENTS_REGISTRATION_STATUS_ON_ADD'] = 'Новая заявка может быть только в статусе «Новая»';
+$MESS['ACADEMY_EVENTS_REGISTRATION_USER_ID'] = 'Пользователь';
