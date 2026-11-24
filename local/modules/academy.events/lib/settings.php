@@ -17,4 +17,9 @@ class Settings
     {
         return Option::get(self::MODULE_ID, 'show_organizer_email') === 'Y';
     }
+
+    public static function getSeatsLimit(): int
+    {
+        return (int)Option::get(self::MODULE_ID, 'seats_limit');
+    }
 }

@@ -25,23 +25,17 @@ class AcademyRegistrationListComponent extends CBitrixComponent
 
         if ($userId > 0)
         {
+            // Get registrations for the current user
             $filter = ['=USER_ID' => $userId];
 
-            $this->arResult['STATS'] = RegistrationTable::query()
-                ->setSelect([
-                    'STATUS',
-                    new ExpressionField('CNT', 'COUNT(*)'),
-                ])
-                ->setFilter($filter)
-                ->setGroup(['STATUS'])
-                ->fetchAll();
-
+            // Pagination
             $navigation = new PageNavigation('registrations');
             $navigation
                 ->setPageSize(5)
                 ->setRecordCount(RegistrationTable::getCount($filter))
                 ->initFromUri();
 
+            // Get registrations with pagination
             $registrations = RegistrationTable::getList([
                 'select' => ['ID', 'EVENT_ID', 'STATUS', 'CREATED_AT'],
                 'filter' => $filter,
@@ -51,8 +45,20 @@ class AcademyRegistrationListComponent extends CBitrixComponent
             ])->fetchCollection();
             $registrations->fill(['PARTICIPANTS', 'MASTERCLASSES']);
 
-            $this->arResult['REGISTRATIONS'] = $registrations;
+            // Get statistics for the current user
+            $stats = RegistrationTable::query()
+                ->setSelect([
+                    'STATUS',
+                    new ExpressionField('CNT', 'COUNT(*)'),
+                ])
+                ->setFilter($filter)
+                ->setGroup(['STATUS'])
+                ->fetchAll();
+
+            // Fill arResult with data
             $this->arResult['NAVIGATION'] = $navigation;
+            $this->arResult['REGISTRATIONS'] = $registrations;
+            $this->arResult['STATS'] = $stats;
         }
 
         $this->includeComponentTemplate();
