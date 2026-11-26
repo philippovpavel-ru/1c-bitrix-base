@@ -13,6 +13,8 @@ use Bitrix\Main\ModuleManager;
 use Bitrix\Iblock\IblockTable;
 use Bitrix\Iblock\TypeTable;
 use Bitrix\Main\SystemException;
+use Bitrix\Highloadblock\HighloadBlockTable;
+use Bitrix\Highloadblock\HighloadBlockLangTable;
 
 Loc::loadMessages(__FILE__);
 
@@ -26,6 +28,7 @@ class academy_events extends CModule
     public $PARTNER_NAME = 'Academy';
     public $PARTNER_URI = 'https://example.com';
 
+    // Инициализация модуля, установка его версии, имени и описания
     public function __construct()
     {
         $arModuleVersion = [];
@@ -37,6 +40,7 @@ class academy_events extends CModule
         $this->MODULE_DESCRIPTION = Loc::getMessage('ACADEMY_EVENTS_MODULE_DESCRIPTION');
     }
 
+    // Устанавливаем модуль, его таблицы, пользовательские поля и файлы
     public function DoInstall()
     {
         ModuleManager::registerModule($this->MODULE_ID);
@@ -44,6 +48,7 @@ class academy_events extends CModule
         $this->InstallFiles();
     }
 
+    // Удаляем модуль, его таблицы, пользовательские поля и файлы
     public function DoUninstall()
     {
         $this->UnInstallFiles();
@@ -51,10 +56,12 @@ class academy_events extends CModule
         ModuleManager::unRegisterModule($this->MODULE_ID);
     }
 
+    // Создаем таблицы сущностей модуля, инфоблок "Мероприятия" и его свойства, пользовательские поля
     public function InstallDB()
     {
         Loader::includeModule($this->MODULE_ID);
 
+        // Создаем таблицы сущностей модуля
         $connection = Application::getConnection();
         foreach ($this->getEntityClasses() as $class)
         {
@@ -65,15 +72,23 @@ class academy_events extends CModule
             }
         }
 
-        $this->installIblock();
+        // Добавляем пользовательское поле UF_COMPANY для пользователей и UF_MANAGER_NOTE для регистрации
+        $this->addUserField('USER', 'UF_COMPANY', 'string', Loc::getMessage('ACADEMY_EVENTS_MODULE_USER_UF_COMPANY'));
+        $this->addUserField(RegistrationTable::getUfId(), 'UF_MANAGER_NOTE', 'string', Loc::getMessage('ACADEMY_EVENTS_MODULE_REGISTRATION_UF_MANAGER_NOTE'));
+
+        $iblockId = $this->installIblock();
+        $venueTable = $this->installVenues();
+        $this->installVenueProperty($iblockId, $venueTable);
 
         return true;
     }
 
+    // Удаляем таблицы сущностей модуля, пользовательские поля и настройки модуля
     public function UnInstallDB()
     {
         Loader::includeModule($this->MODULE_ID);
 
+        // Удаляем таблицы сущностей модуля
         $connection = Application::getConnection();
         foreach ($this->getEntityClasses() as $class)
         {
@@ -84,11 +99,16 @@ class academy_events extends CModule
             }
         }
 
+        // Удаляем пользовательское поле UF_MANAGER_NOTE из таблицы регистрации
+        (new CUserTypeEntity())->DropEntity(RegistrationTable::getUfId());
+
+        // Удаляем настройки модуля
         Option::delete($this->MODULE_ID);
 
         return true;
     }
 
+    // Возвращает массив классов сущностей модуля
     private function getEntityClasses(): array
     {
         return [
@@ -99,6 +119,7 @@ class academy_events extends CModule
         ];
     }
 
+    // Копируем файлы компонентов модуля
     public function InstallFiles()
     {
         CopyDirFiles(
@@ -111,6 +132,7 @@ class academy_events extends CModule
         return true;
     }
 
+    // Удаляем файлы компонентов модуля
     public function UnInstallFiles()
     {
         Directory::deleteDirectory($_SERVER['DOCUMENT_ROOT'] . '/local/components/academy/event.host');
@@ -119,7 +141,8 @@ class academy_events extends CModule
         return true;
     }
 
-    private function installIblock(): void
+    // Создаем инфоблок "Мероприятия" и его свойства
+    private function installIblock(): int
     {
         Loader::includeModule('iblock');
 
@@ -155,7 +178,7 @@ class academy_events extends CModule
                 (new CIBlock())->Update($iblock['ID'], ['API_CODE' => 'Events']);
             }
 
-            return;
+            return (int)$iblock['ID'];
         }
 
         $iblockApi = new CIBlock();
@@ -189,6 +212,109 @@ class academy_events extends CModule
             {
                 throw new SystemException($propertyApi->LAST_ERROR);
             }
+        }
+
+        return (int)$iblockId;
+    }
+
+    // Добавляем пользовательское поле для сущности
+    private function addUserField(string $entityId, string $fieldName, string $type, string $label, bool $mandatory = false): void
+    {
+        $exists = CUserTypeEntity::GetList([], ['ENTITY_ID' => $entityId, 'FIELD_NAME' => $fieldName])->Fetch();
+        if ($exists)
+        {
+            return;
+        }
+
+        $fieldId = (new CUserTypeEntity())->Add([
+            'ENTITY_ID' => $entityId,
+            'FIELD_NAME' => $fieldName,
+            'USER_TYPE_ID' => $type,
+            'MANDATORY' => $mandatory ? 'Y' : 'N',
+            'EDIT_FORM_LABEL' => ['ru' => $label],
+            'LIST_COLUMN_LABEL' => ['ru' => $label],
+        ]);
+
+        if (!$fieldId)
+        {
+            global $APPLICATION;
+            $exception = $APPLICATION->GetException();
+            throw new SystemException($exception ? $exception->GetString() : 'Не удалось создать поле ' . $fieldName);
+        }
+    }
+
+    // Создаем таблицу для хранения мест проведения мероприятий
+    private function installVenues(): string
+    {
+        Loader::includeModule('highloadblock');
+
+        $block = HighloadBlockTable::getList([
+            'select' => ['ID', 'TABLE_NAME'],
+            'filter' => ['=NAME' => 'AcademyEventsVenue'],
+        ])->fetch();
+
+        if (!$block)
+        {
+            $result = HighloadBlockTable::add([
+                'NAME' => 'AcademyEventsVenue',
+                'TABLE_NAME' => 'academy_events_venue',
+            ]);
+            if (!$result->isSuccess())
+            {
+                throw new SystemException(implode('; ', $result->getErrorMessages()));
+            }
+            $block = ['ID' => $result->getId(), 'TABLE_NAME' => 'academy_events_venue'];
+        }
+
+        $entityId = HighloadBlockTable::compileEntityId($block['ID']);
+        $this->addUserField($entityId, 'UF_NAME', 'string', Loc::getMessage('ACADEMY_EVENTS_VENUE_UF_NAME'), true);
+        $this->addUserField($entityId, 'UF_XML_ID', 'string', Loc::getMessage('ACADEMY_EVENTS_VENUE_UF_XML_ID'), true);
+        $this->addUserField($entityId, 'UF_CAPACITY', 'integer', Loc::getMessage('ACADEMY_EVENTS_VENUE_UF_CAPACITY'), true);
+
+        $blockLangName = (string)Loc::getMessage('ACADEMY_EVENTS_VENUE_HL_NAME');
+        if ($blockLangName !== '')
+        {
+            $blockLang = HighloadBlockLangTable::getList([
+                'filter' => ['=ID' => (int)$block['ID'], '=LID' => 'ru'],
+            ])->fetch();
+
+            if (!$blockLang)
+            {
+                $langResult = HighloadBlockLangTable::add([
+                    'ID' => (int)$block['ID'],
+                    'LID' => 'ru',
+                    'NAME' => $blockLangName,
+                ]);
+                if (!$langResult->isSuccess())
+                {
+                    throw new SystemException(implode('; ', $langResult->getErrorMessages()));
+                }
+            }
+        }
+
+        return $block['TABLE_NAME'];
+    }
+
+    private function installVenueProperty(int $iblockId, string $tableName): void
+    {
+        $exists = CIBlockProperty::GetList([], ['IBLOCK_ID' => $iblockId, 'CODE' => 'VENUE'])->Fetch();
+        if ($exists)
+        {
+            return;
+        }
+
+        $property = new CIBlockProperty();
+        $propertyAdded = $property->Add([
+            'IBLOCK_ID' => $iblockId,
+            'NAME' => 'Площадка',
+            'CODE' => 'VENUE',
+            'PROPERTY_TYPE' => 'S',
+            'USER_TYPE' => 'directory',
+            'USER_TYPE_SETTINGS' => ['TABLE_NAME' => $tableName],
+        ]);
+        if (!$propertyAdded)
+        {
+            throw new SystemException($property->LAST_ERROR);
         }
     }
 }

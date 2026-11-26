@@ -124,4 +124,9 @@ class RegistrationTable extends DataManager
 
         return Loc::getMessage('ACADEMY_EVENTS_REGISTRATION_EMAIL_INVALID');
     }
+
+    public static function getUfId(): string
+    {
+        return 'ACADEMY_EVENTS_REGISTRATION';
+    }
 }

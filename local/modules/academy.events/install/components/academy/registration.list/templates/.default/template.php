@@ -28,6 +28,9 @@ if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true)
                 Заявка № <?= (int)$registration->getId() ?> - <?= HtmlFilter::encode($registration->getEvent()->getName()) ?>
                 <span class="events-status events-status--<?= HtmlFilter::encode(strtolower($registration->getStatus())) ?>"><?= HtmlFilter::encode($registration->getStatus()) ?></span>
             </p>
+            <?php if (isset($arResult['VENUES'][(int)$registration->getEventId()])): ?>
+                <p>Площадка: <?= HtmlFilter::encode((string)$arResult['VENUES'][(int)$registration->getEventId()]['UF_NAME']) ?></p>
+            <?php endif; ?>
             <ul>
                 <?php foreach ($registration->getParticipants() as $participant): ?>
                     <li><?= HtmlFilter::encode($participant->getName()) ?></li>

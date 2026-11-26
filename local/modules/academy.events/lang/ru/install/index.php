@@ -2,3 +2,9 @@
 
 $MESS['ACADEMY_EVENTS_MODULE_NAME'] = 'Мероприятия';
 $MESS['ACADEMY_EVENTS_MODULE_DESCRIPTION'] = 'Афиша мероприятий и запись участников';
+$MESS['ACADEMY_EVENTS_MODULE_USER_UF_COMPANY'] = 'Компания';
+$MESS['ACADEMY_EVENTS_MODULE_REGISTRATION_UF_MANAGER_NOTE'] = 'Комментарий организатора';
+$MESS['ACADEMY_EVENTS_VENUE_HL_NAME'] = 'Площадки проведения';
+$MESS['ACADEMY_EVENTS_VENUE_UF_NAME'] = 'Название';
+$MESS['ACADEMY_EVENTS_VENUE_UF_CAPACITY'] = 'Вместимость';
+$MESS['ACADEMY_EVENTS_VENUE_UF_XML_ID'] = 'Код';
