@@ -6,6 +6,7 @@ use Bitrix\Main\Application;
 use Bitrix\Main\Result;
 use Bitrix\Main\DB\SqlExpression;
 use Bitrix\Main\Error;
+use Bitrix\Iblock\Elements\ElementEventsTable;
 
 class RegistrationService
 {
@@ -21,13 +22,24 @@ class RegistrationService
 
         try
         {
+            $event = ElementEventsTable::query()
+                ->setSelect(['ID', 'SEATS_LIMIT'])
+                ->where('ID', $eventId)
+                ->where('ACTIVE', true)
+                ->fetchObject()
+            ;
+            if (!$event)
+            {
+                return (new Result())->addError(new Error('Мероприятие не найдено'));
+            }
+
             $taken = (int)$connection->queryScalar(new SqlExpression(
                 'SELECT SUM(SEATS) FROM ?# WHERE EVENT_ID = ?i AND STATUS <> ?s',
                 RegistrationTable::getTableName(),
                 $eventId,
                 RegistrationTable::STATUS_CANCELLED
             ));
-            $free = Settings::getSeatsLimit() - $taken;
+            $free = (int)$event->get('SEATS_LIMIT')?->getValue() - $taken;
 
             if ($free < count($participantNames))
             {

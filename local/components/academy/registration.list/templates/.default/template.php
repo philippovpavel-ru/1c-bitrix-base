@@ -25,7 +25,7 @@ if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true)
     <?php foreach ($arResult['REGISTRATIONS'] as $registration): ?>
         <div class="academy-registration">
             <p>
-                Заявка № <?= (int)$registration->getId() ?>
+                Заявка № <?= (int)$registration->getId() ?> - <?= HtmlFilter::encode($registration->getEvent()->getName()) ?>
                 <span class="events-status events-status--<?= HtmlFilter::encode(strtolower($registration->getStatus())) ?>"><?= HtmlFilter::encode($registration->getStatus()) ?></span>
             </p>
             <ul>

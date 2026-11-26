@@ -19,6 +19,7 @@ use Bitrix\Main\ORM\Query\Join;
 use Bitrix\Main\UserTable;
 use Bitrix\Main\ORM\Fields\Relations\OneToMany;
 use Bitrix\Main\ORM\Fields\Relations\ManyToMany;
+use Bitrix\Iblock\Elements\ElementEventsTable;
 
 Loc::loadMessages(__FILE__);
 
@@ -107,6 +108,8 @@ class RegistrationTable extends DataManager
 
             (new ManyToMany('MASTERCLASSES', MasterclassTable::class))
                 ->configureTableName('academy_events_registration_masterclass'),
+
+            (new Reference('EVENT', ElementEventsTable::class, Join::on('this.EVENT_ID', 'ref.ID'))),
         ];
     }
 

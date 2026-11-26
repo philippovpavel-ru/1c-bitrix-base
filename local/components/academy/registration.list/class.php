@@ -37,7 +37,7 @@ class AcademyRegistrationListComponent extends CBitrixComponent
 
             // Get registrations with pagination
             $registrations = RegistrationTable::getList([
-                'select' => ['ID', 'EVENT_ID', 'STATUS', 'CREATED_AT'],
+                'select' => ['ID', 'EVENT_ID', 'STATUS', 'CREATED_AT', 'EVENT'],
                 'filter' => $filter,
                 'order' => ['CREATED_AT' => 'DESC', 'ID' => 'DESC'],
                 'offset' => $navigation->getOffset(),

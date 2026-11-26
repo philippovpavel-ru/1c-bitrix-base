@@ -2,6 +2,5 @@
 
 $academy_events_default_option = [
     'organizer_email' => 'events@example.com',
-    'show_organizer_email' => 'Y',
-    'seats_limit' => 10,
+    'show_organizer_email' => 'Y'
 ];

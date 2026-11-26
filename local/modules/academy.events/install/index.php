@@ -10,6 +10,9 @@ use Bitrix\Main\Config\Option;
 use Bitrix\Main\IO\Directory;
 use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\ModuleManager;
+use Bitrix\Iblock\IblockTable;
+use Bitrix\Iblock\TypeTable;
+use Bitrix\Main\SystemException;
 
 Loc::loadMessages(__FILE__);
 
@@ -62,6 +65,8 @@ class academy_events extends CModule
             }
         }
 
+        $this->installIblock();
+
         return true;
     }
 
@@ -112,5 +117,78 @@ class academy_events extends CModule
         Directory::deleteDirectory($_SERVER['DOCUMENT_ROOT'] . '/local/components/academy/registration.list');
 
         return true;
+    }
+
+    private function installIblock(): void
+    {
+        Loader::includeModule('iblock');
+
+        if (!TypeTable::getByPrimary('events')->fetch())
+        {
+            $type = new CIBlockType();
+            $typeAdded = $type->Add([
+                'ID' => 'events',
+                'SECTIONS' => 'Y',
+                'LANG' => [
+                    'ru' => [
+                        'NAME' => 'Мероприятия',
+                        'SECTION_NAME' => 'Раздел',
+                        'ELEMENT_NAME' => 'Мероприятие',
+                    ],
+                ],
+            ]);
+            if (!$typeAdded)
+            {
+                throw new SystemException($type->LAST_ERROR);
+            }
+        }
+
+        $iblock = IblockTable::getList([
+            'select' => ['ID', 'API_CODE'],
+            'filter' => ['=IBLOCK_TYPE_ID' => 'events', '=CODE' => 'events'],
+        ])->fetch();
+
+        if ($iblock)
+        {
+            if ($iblock['API_CODE'] !== 'Events')
+            {
+                (new CIBlock())->Update($iblock['ID'], ['API_CODE' => 'Events']);
+            }
+
+            return;
+        }
+
+        $iblockApi = new CIBlock();
+        $iblockId = $iblockApi->Add([
+            'IBLOCK_TYPE_ID' => 'events',
+            'NAME' => 'Мероприятия',
+            'CODE' => 'events',
+            'API_CODE' => 'Events',
+            'ACTIVE' => 'Y',
+            'LID' => ['s1'],
+            'GROUP_ID' => [2 => 'R'],
+        ]);
+        if (!$iblockId)
+        {
+            throw new SystemException($iblockApi->LAST_ERROR);
+        }
+
+        $properties = [
+            ['NAME' => 'Дата и время', 'CODE' => 'EVENT_DATE', 'PROPERTY_TYPE' => 'S', 'USER_TYPE' => 'DateTime'],
+            ['NAME' => 'Лимит мест', 'CODE' => 'SEATS_LIMIT', 'PROPERTY_TYPE' => 'N'],
+            ['NAME' => 'Ведущий', 'CODE' => 'HOST', 'PROPERTY_TYPE' => 'N', 'USER_TYPE' => 'UserID'],
+            ['NAME' => 'Формат', 'CODE' => 'FORMAT', 'PROPERTY_TYPE' => 'L', 'VALUES' => [
+                ['VALUE' => 'Онлайн', 'XML_ID' => 'online', 'SORT' => 10],
+                ['VALUE' => 'Офлайн', 'XML_ID' => 'offline', 'SORT' => 20],
+            ]],
+        ];
+        foreach ($properties as $property)
+        {
+            $propertyApi = new CIBlockProperty();
+            if (!$propertyApi->Add(['IBLOCK_ID' => $iblockId, 'ACTIVE' => 'Y'] + $property))
+            {
+                throw new SystemException($propertyApi->LAST_ERROR);
+            }
+        }
     }
 }
