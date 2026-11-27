@@ -49,7 +49,7 @@ class AcademyRegistrationListComponent extends CBitrixComponent
             $venueCodes = [];
             foreach ($registrations as $registration)
             {
-                $venueCode = $registration->getEvent()->get('VENUE')?->getValue();
+                $venueCode = $registration->getEvent()?->get('VENUE')?->getValue();
                 if ($venueCode !== null && $venueCode !== '')
                 {
                     $venueCodes[] = (string)$venueCode;
@@ -61,7 +61,7 @@ class AcademyRegistrationListComponent extends CBitrixComponent
             if (!empty($venueCodes) && Loader::includeModule('highloadblock'))
             {
                 $block = HighloadBlockTable::getList([
-                    'select' => ['ID'],
+                    'select' => ['ID', 'NAME', 'TABLE_NAME'],
                     'filter' => ['=NAME' => 'AcademyEventsVenue'],
                 ])->fetch();
 
@@ -85,7 +85,7 @@ class AcademyRegistrationListComponent extends CBitrixComponent
             foreach ($registrations as $registration)
             {
                 $eventId = (int)$registration->getEventId();
-                $venueCode = $registration->getEvent()->get('VENUE')?->getValue();
+                $venueCode = $registration->getEvent()?->get('VENUE')?->getValue();
                 if ($venueCode !== null)
                 {
                     $venueCode = (string)$venueCode;

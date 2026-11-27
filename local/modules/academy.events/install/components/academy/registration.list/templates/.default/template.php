@@ -23,13 +23,17 @@ if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true)
         <?php endforeach; ?>
     </div>
     <?php foreach ($arResult['REGISTRATIONS'] as $registration): ?>
+        <?php
+        $eventId = (int)$registration->getEventId();
+        $venue = $arResult['VENUES'][$eventId] ?? null;
+        ?>
         <div class="academy-registration">
             <p>
                 Заявка № <?= (int)$registration->getId() ?> - <?= HtmlFilter::encode($registration->getEvent()->getName()) ?>
                 <span class="events-status events-status--<?= HtmlFilter::encode(strtolower($registration->getStatus())) ?>"><?= HtmlFilter::encode($registration->getStatus()) ?></span>
             </p>
-            <?php if (isset($arResult['VENUES'][(int)$registration->getEventId()])): ?>
-                <p>Площадка: <?= HtmlFilter::encode((string)$arResult['VENUES'][(int)$registration->getEventId()]['UF_NAME']) ?></p>
+            <?php if ($venue !== null): ?>
+                <p>Площадка: <?= HtmlFilter::encode((string)$venue['UF_NAME']) ?><?php if ((int)$venue['UF_CAPACITY'] > 0): ?>, <?= (int)$venue['UF_CAPACITY'] ?> мест<?php endif; ?></p>
             <?php endif; ?>
             <ul>
                 <?php foreach ($registration->getParticipants() as $participant): ?>

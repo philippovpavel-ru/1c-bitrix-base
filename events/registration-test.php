@@ -46,9 +46,9 @@ $registrations = RegistrationTable::query()
         'ID',
         'NAME',
         'EVENT_ID',
-        'EVENT.NAME',
-        'EVENT.VENUE',
-        'USER.UF_COMPANY',
+        'EVENT_NAME' => 'EVENT.NAME',
+        'VENUE_CODE' => 'EVENT.VENUE.VALUE',
+        'USER_COMPANY' => 'USER.UF_COMPANY',
     ])
     ->whereIn('EVENT_ID', [5, 1])
     ->setOrder(['ID' => 'ASC'])
@@ -57,14 +57,11 @@ $registrations = RegistrationTable::query()
 $venueCodes = [];
 foreach ($registrations as $registration)
 {
-    $venueCode = $registration['EVENT_VENUE']
-        ?? $registration['EVENT_VENUE_VALUE']
-        ?? $registration['EVENT']['VENUE']
-        ?? null;
+    $venueCode = (string)($registration['VENUE_CODE'] ?? '');
 
-    if ($venueCode !== null && $venueCode !== '')
+    if ($venueCode !== '')
     {
-        $venueCodes[] = (string)$venueCode;
+        $venueCodes[] = $venueCode;
     }
 }
 $venueCodes = array_values(array_unique($venueCodes));
@@ -73,7 +70,7 @@ $venuesByCode = [];
 if (!empty($venueCodes) && Loader::includeModule('highloadblock'))
 {
     $block = HighloadBlockTable::getList([
-        'select' => ['ID'],
+        'select' => ['ID', 'NAME', 'TABLE_NAME'],
         'filter' => ['=NAME' => 'AcademyEventsVenue'],
     ])->fetch();
 
@@ -101,23 +98,15 @@ if (!empty($venueCodes) && Loader::includeModule('highloadblock'))
     <ul>
         <?php foreach ($registrations as $registration): ?>
             <?php
-            $venueCode = $registration['EVENT_VENUE']
-                ?? $registration['EVENT_VENUE_VALUE']
-                ?? $registration['EVENT']['VENUE']
-                ?? null;
-            $venueCode = $venueCode !== null ? (string)$venueCode : '';
+            $venueCode = (string)($registration['VENUE_CODE'] ?? '');
 
             if ($venueCode === '')
             {
                 continue;
             }
 
-            $eventName = $registration['EVENT_NAME']
-                ?? $registration['EVENT']['NAME']
-                ?? '';
-            $company = $registration['USER_UF_COMPANY']
-                ?? $registration['USER']['UF_COMPANY']
-                ?? '';
+            $eventName = (string)($registration['EVENT_NAME'] ?? '');
+            $company = (string)($registration['USER_COMPANY'] ?? '');
             $venueName = $venuesByCode[$venueCode]['UF_NAME'] ?? $venueCode;
             ?>
             <li>
