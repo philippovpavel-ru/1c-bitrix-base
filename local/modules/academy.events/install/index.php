@@ -15,6 +15,9 @@ use Bitrix\Iblock\TypeTable;
 use Bitrix\Main\SystemException;
 use Bitrix\Highloadblock\HighloadBlockTable;
 use Bitrix\Highloadblock\HighloadBlockLangTable;
+use Bitrix\Main\EventManager;
+use Academy\Events\EventHandler\RegistrationHandler;
+use Academy\Events\EventHandler\UserHandler;
 
 Loc::loadMessages(__FILE__);
 
@@ -46,11 +49,13 @@ class academy_events extends CModule
         ModuleManager::registerModule($this->MODULE_ID);
         $this->InstallDB();
         $this->InstallFiles();
+        $this->InstallEvents();
     }
 
     // Удаляем модуль, его таблицы, пользовательские поля и файлы
     public function DoUninstall()
     {
+        $this->UnInstallEvents();
         $this->UnInstallFiles();
         $this->UnInstallDB();
         ModuleManager::unRegisterModule($this->MODULE_ID);
@@ -80,6 +85,29 @@ class academy_events extends CModule
         $venueTable = $this->installVenues();
         $this->installVenueProperty($iblockId, $venueTable);
 
+        EventManager::getInstance()->registerEventHandler(
+            'academy.events',
+            'OnAfterRegistrationAdd',
+            $this->MODULE_ID,
+            RegistrationHandler::class,
+            'onAfterRegistrationAdd'
+        );
+
+        EventManager::getInstance()->registerEventHandlerCompatible(
+            'main',
+            'OnUserDelete',
+            $this->MODULE_ID,
+            UserHandler::class,
+            'onUserDelete'
+        );
+
+        CAgent::AddAgent(
+            '\Academy\Events\Agent\ReminderAgent::run();',
+            $this->MODULE_ID,
+            'N',
+            86400
+        );
+
         return true;
     }
 
@@ -104,6 +132,22 @@ class academy_events extends CModule
 
         // Удаляем настройки модуля
         Option::delete($this->MODULE_ID);
+
+        EventManager::getInstance()->unRegisterEventHandler(
+            'academy.events',
+            'OnAfterRegistrationAdd',
+            $this->MODULE_ID,
+            RegistrationHandler::class,
+            'onAfterRegistrationAdd'
+        );
+
+        EventManager::getInstance()->unRegisterEventHandler(
+            'main',
+            'OnUserDelete',
+            $this->MODULE_ID,
+            UserHandler::class,
+            'onUserDelete'
+        );
 
         return true;
     }
@@ -316,5 +360,44 @@ class academy_events extends CModule
         {
             throw new SystemException($property->LAST_ERROR);
         }
+    }
+
+    public function InstallEvents()
+    {
+        $type = new CEventType();
+        $type->Add([
+            'LID' => 'ru',
+            'EVENT_NAME' => 'ACADEMY_EVENTS_REGISTRATION',
+            'NAME' => 'Заявка на мероприятие принята',
+            'DESCRIPTION' => "#EMAIL_TO# — email участника\n#REGISTRATION_ID# — номер заявки\n#EVENT_NAME# — мероприятие\n#SEATS# — количество мест",
+        ]);
+
+        $message = new CEventMessage();
+        $message->Add([
+            'ACTIVE' => 'Y',
+            'EVENT_NAME' => 'ACADEMY_EVENTS_REGISTRATION',
+            'LID' => ['s1'],
+            'EMAIL_FROM' => '#DEFAULT_EMAIL_FROM#',
+            'EMAIL_TO' => '#EMAIL_TO#',
+            'SUBJECT' => 'Заявка № #REGISTRATION_ID# принята',
+            'BODY_TYPE' => 'text',
+            'MESSAGE' => "Вы записаны на мероприятие «#EVENT_NAME#».\nКоличество мест: #SEATS#.",
+        ]);
+
+        return true;
+    }
+
+    public function UnInstallEvents()
+    {
+        $by = 'id';
+        $order = 'asc';
+        $messages = CEventMessage::GetList($by, $order, ['TYPE_ID' => 'ACADEMY_EVENTS_REGISTRATION']);
+        while ($message = $messages->Fetch())
+        {
+            CEventMessage::Delete($message['ID']);
+        }
+        CEventType::Delete('ACADEMY_EVENTS_REGISTRATION');
+
+        return true;
     }
 }

@@ -6,6 +6,7 @@ use Bitrix\Main\Application;
 use Bitrix\Main\Result;
 use Bitrix\Main\DB\SqlExpression;
 use Bitrix\Main\Error;
+use Bitrix\Main\Event;
 use Bitrix\Iblock\Elements\ElementEventsTable;
 
 class RegistrationService
@@ -78,6 +79,10 @@ class RegistrationService
                 }
 
                 $connection->commitTransaction();
+
+                (new Event('academy.events', 'OnAfterRegistrationAdd', [
+                    'ID' => $result->getId(),
+                ]))->send();
 
                 return $result;
             }
