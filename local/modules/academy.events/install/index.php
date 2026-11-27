@@ -384,6 +384,26 @@ class academy_events extends CModule
             'MESSAGE' => "Вы записаны на мероприятие «#EVENT_NAME#».\nКоличество мест: #SEATS#.",
         ]);
 
+        $reminderType = new CEventType();
+        $reminderType->Add([
+            'LID' => 'ru',
+            'EVENT_NAME' => 'ACADEMY_EVENTS_REMINDER',
+            'NAME' => 'Напоминание о мероприятии',
+            'DESCRIPTION' => "#EMAIL_TO# — email участника\n#EVENT_NAME# — мероприятие\n#EVENT_DATE# — дата и время мероприятия",
+        ]);
+
+        $reminderMessage = new CEventMessage();
+        $reminderMessage->Add([
+            'ACTIVE' => 'Y',
+            'EVENT_NAME' => 'ACADEMY_EVENTS_REMINDER',
+            'LID' => ['s1'],
+            'EMAIL_FROM' => '#DEFAULT_EMAIL_FROM#',
+            'EMAIL_TO' => '#EMAIL_TO#',
+            'SUBJECT' => 'Напоминание: #EVENT_NAME#',
+            'BODY_TYPE' => 'text',
+            'MESSAGE' => "Напоминаем, что завтра состоится мероприятие «#EVENT_NAME#».\nДата и время: #EVENT_DATE#.",
+        ]);
+
         return true;
     }
 
@@ -391,12 +411,15 @@ class academy_events extends CModule
     {
         $by = 'id';
         $order = 'asc';
-        $messages = CEventMessage::GetList($by, $order, ['TYPE_ID' => 'ACADEMY_EVENTS_REGISTRATION']);
-        while ($message = $messages->Fetch())
+        foreach (['ACADEMY_EVENTS_REGISTRATION', 'ACADEMY_EVENTS_REMINDER'] as $eventName)
         {
-            CEventMessage::Delete($message['ID']);
+            $messages = CEventMessage::GetList($by, $order, ['TYPE_ID' => $eventName]);
+            while ($message = $messages->Fetch())
+            {
+                CEventMessage::Delete($message['ID']);
+            }
+            CEventType::Delete($eventName);
         }
-        CEventType::Delete('ACADEMY_EVENTS_REGISTRATION');
 
         return true;
     }
